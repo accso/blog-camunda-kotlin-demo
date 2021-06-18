@@ -21,6 +21,8 @@
         <kotlin.version>1.5.10</kotlin.version>
         <camunda.spring-boot.version>7.15.0</camunda.spring-boot.version>
         <spring-boot.version>2.4.4</spring-boot.version>
+        <jackson.version>2.2.3</jackson.version>
+        <jackson-module-kotlin.version>2.11.4</jackson-module-kotlin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -51,7 +53,12 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.2.3</version>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+            <version>${jackson-module-kotlin.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
