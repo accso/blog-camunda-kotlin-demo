@@ -1,26 +1,27 @@
 package de.accso.mmrsic.camundakotlindemo
 
-import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication
 import org.camunda.bpm.spring.boot.starter.event.PostDeployEvent
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.event.EventListener
-import java.util.logging.Logger
 
 /**
- * Sample Springboot Kotlin application as presented at Camunda for Java.
- * @see <a href="https://docs.camunda.org/get-started/spring-boot/">Camunda Guide</a>
+ * Sample Springboot Kotlin application.
  */
 @SpringBootApplication
 @EnableProcessApplication
-open class CamundaKotlinDemoApplication(private val runtimeService: RuntimeService) {
+open class CamundaKotlinDemoApplication(private val repositoryService: RepositoryService) {
 
     @EventListener
     fun processPostDeploy(evt: PostDeployEvent) {
-        LOG.info("Post deploy event caught: $evt")
-        val processInstance = runtimeService.startProcessInstanceByKey("loanApproval")
-        LOG.info("Started process instance with definition ID=${processInstance.processDefinitionId}")
+        LOG.debug("Post deploy event caught: $evt")
+        val numProcessDefs = repositoryService.createProcessDefinitionQuery().list().size
+        LOG.info("Number of deployed process definitions: $numProcessDefs")
+        LOG.trace("The event knows about the repository too: ${evt.processEngine.repositoryService}")
     }
 }
 
@@ -28,4 +29,4 @@ fun main(args: Array<String>) {
     runApplication<CamundaKotlinDemoApplication>(*args)
 }
 
-private val LOG: Logger = Logger.getLogger(CamundaKotlinDemoApplication::class.java.name)
+private val LOG: Logger = LoggerFactory.getLogger(CamundaKotlinDemoApplication::class.java.name)

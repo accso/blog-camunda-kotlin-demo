@@ -1,7 +1,10 @@
 camunda.bpm:
   admin-user:
-    id: demo
-    password: demo
-    firstName: Demo
+    id: camunda
+    password: camunda!
+    firstName: Camunda
   filter:
     create: All tasks
+  generic-properties.properties:
+    initialize-telemetry: false
+    telemetry-reporter-activate: false
