@@ -25,8 +25,10 @@ open class CamundaKotlinDemoApplication(private val repositoryService: Repositor
     }
 }
 
+/** Main entry point for SpringBoot. */
 fun main(args: Array<String>) {
     runApplication<CamundaKotlinDemoApplication>(*args)
 }
 
+/** Logger for this file. */
 private val LOG: Logger = LoggerFactory.getLogger(CamundaKotlinDemoApplication::class.java.name)

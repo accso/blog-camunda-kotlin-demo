@@ -50,37 +50,59 @@ private object Process {
 @Deployment(resources = ["processes/${Process.FILE_NAME}"])
 class CamundaShoppingProcessTests {
 
+    /** Mockito mocked [ProcessScenario] for unit tests. */
     @Mock
     lateinit var shoppingProcess: ProcessScenario
 
+    /** Initialize all mocks of this JUnit class. */
     @BeforeEach
     fun initMocks() {
         MockitoAnnotations.openMocks(this)
     }
 
+    /** Reset all [Mock]s of this JUnit class. */
     @AfterEach
     fun resetMocks() {
         reset(shoppingProcess)
     }
 
+    /** Test the [shoppingProcess] execution with all necessary values providing the simplest execution path. */
     @Test
     fun testScenarioSimplestCompletionPath() {
         Scenario.run(shoppingProcess).startByKey(Process.NAME, Process.Variables.DEFAULT_VALUES).execute()
-        verify(shoppingProcess).hasFinished(Process.ActivityIds.COMPLETED)
 
+        verify(shoppingProcess).hasFinished(Process.ActivityIds.COMPLETED)
         verifyCompletedActivityIdsInOrder(
             shoppingProcess,
             "CreateShoppingList", "PrepareMeansOfPayment", "PrepareShoppingCompleted",
             "ChooseGoods#multiInstanceBody", "PayGoods", "PerformShoppingCompleted"
         )
-
         verifyNeverCompletedActivityIds(
             shoppingProcess,
             "PrepareShoppingCartDeposit", "TakeShoppingCart", "CreateNewShoppingList"
         )
     }
 
-    /** Start a process instance where a required variable is not set. */
+    /** Test the [shoppingProcess] execution with with an alternative path as imposed by variable values. */
+    @Test
+    fun testScenarioShoppingCart() {
+        Scenario.run(shoppingProcess).startByKey(
+            Process.NAME, Process.Variables.DEFAULT_VALUES.plus(
+                mapOf(Process.Variables.CART_NEEDED to true, Process.Variables.CART_REQUIRED to true)
+            )
+        ).execute()
+
+        verify(shoppingProcess).hasFinished(Process.ActivityIds.COMPLETED)
+        verifyCompletedActivityIdsInOrder(
+            shoppingProcess,
+            "CreateShoppingList", "PrepareMeansOfPayment", "PrepareShoppingCartDeposit", "PrepareShoppingCompleted",
+            "TakeShoppingCart", "ChooseGoods#multiInstanceBody", "PayGoods", "PerformShoppingCompleted",
+            "ShoppingCompleted"
+        )
+        verifyNeverCompletedActivityIds(shoppingProcess, "CreateNewShoppingList")
+    }
+
+    /** Test the [shoppingProcess] execution when at least a required variable is not set. */
     @Test
     fun testStartProcessInstanceWithoutRequiredVariables() {
         assertThrows(ProcessEngineException::class.java) {
