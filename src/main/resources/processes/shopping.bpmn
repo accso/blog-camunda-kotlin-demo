@@ -1,42 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1ifx2jn" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
   <bpmn:process id="Shopping" name="Shopping" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1" name="Some goods&#10;needed">
-      <bpmn:outgoing>Flow_01t1t2h</bpmn:outgoing>
-      <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_1wakw80">
-        <bpmn:condition xsi:type="bpmn:tFormalExpression" language="groovy">true</bpmn:condition>
-      </bpmn:conditionalEventDefinition>
-    </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_01t1t2h" sourceRef="StartEvent_1" targetRef="Activity_0v94o71" />
+    <bpmn:sequenceFlow id="Flow_01t1t2h" sourceRef="StartEvent" targetRef="Activity_0v94o71" />
     <bpmn:subProcess id="Activity_0v94o71" name="Prepare shopping">
       <bpmn:incoming>Flow_01t1t2h</bpmn:incoming>
       <bpmn:outgoing>Flow_1p3snpq</bpmn:outgoing>
-      <bpmn:startEvent id="Event_14ojxk9">
+      <bpmn:startEvent id="StartEvent_PrepareShopping">
         <bpmn:outgoing>Flow_0v2pxo5</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:task id="CreateShoppingList" name="Create shopping list">
-        <bpmn:incoming>Flow_0v2pxo5</bpmn:incoming>
-        <bpmn:outgoing>Flow_1dvqi2c</bpmn:outgoing>
-        <bpmn:dataOutputAssociation id="DataOutputAssociation_0kd3be9">
-          <bpmn:targetRef>InitialShoppingList</bpmn:targetRef>
-        </bpmn:dataOutputAssociation>
-      </bpmn:task>
-      <bpmn:sequenceFlow id="Flow_0v2pxo5" sourceRef="Event_14ojxk9" targetRef="CreateShoppingList" />
+      <bpmn:sequenceFlow id="Flow_0v2pxo5" sourceRef="StartEvent_PrepareShopping" targetRef="CreateShoppingList" />
       <bpmn:sequenceFlow id="Flow_1dvqi2c" sourceRef="CreateShoppingList" targetRef="Gateway_0brnvv1" />
       <bpmn:parallelGateway id="Gateway_0brnvv1">
         <bpmn:incoming>Flow_1dvqi2c</bpmn:incoming>
         <bpmn:outgoing>Flow_1bmt1ky</bpmn:outgoing>
         <bpmn:outgoing>Flow_03a826d</bpmn:outgoing>
       </bpmn:parallelGateway>
-      <bpmn:task id="PrepareMeansOfPayment" name="Prepare means of payment">
-        <bpmn:incoming>Flow_1bmt1ky</bpmn:incoming>
-        <bpmn:outgoing>Flow_1bes80e</bpmn:outgoing>
-      </bpmn:task>
       <bpmn:sequenceFlow id="Flow_1bmt1ky" sourceRef="Gateway_0brnvv1" targetRef="PrepareMeansOfPayment" />
-      <bpmn:task id="PrepareShoppingCartDeposit" name="Prepare shopping cart deposit">
-        <bpmn:incoming>Flow_0ka5yss</bpmn:incoming>
-        <bpmn:outgoing>Flow_1sxxq2f</bpmn:outgoing>
-      </bpmn:task>
       <bpmn:sequenceFlow id="Flow_03a826d" sourceRef="Gateway_0brnvv1" targetRef="Gateway_08t1zv7" />
       <bpmn:sequenceFlow id="Flow_1sxxq2f" sourceRef="PrepareShoppingCartDeposit" targetRef="Gateway_1uyshig" />
       <bpmn:parallelGateway id="Gateway_1j7nky6">
@@ -45,7 +24,7 @@
         <bpmn:outgoing>Flow_1hzwys0</bpmn:outgoing>
       </bpmn:parallelGateway>
       <bpmn:sequenceFlow id="Flow_1bes80e" sourceRef="PrepareMeansOfPayment" targetRef="Gateway_1j7nky6" />
-      <bpmn:endEvent id="PrepareShoppingCompleted">
+      <bpmn:endEvent id="PrepareShoppingCompleted" name="Prepare completed">
         <bpmn:incoming>Flow_1hzwys0</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_1hzwys0" sourceRef="Gateway_1j7nky6" targetRef="PrepareShoppingCompleted" />
@@ -64,24 +43,42 @@
       <bpmn:sequenceFlow id="Flow_1lsm3xs" name="no" sourceRef="Gateway_08t1zv7" targetRef="Gateway_1uyshig">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!shoppingCartNeeded}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_1jf62ed" sourceRef="Event_1d8ucpr" targetRef="Event_0ot31yo" />
-      <bpmn:boundaryEvent id="Event_1d8ucpr" attachedToRef="PrepareMeansOfPayment">
+      <bpmn:sequenceFlow id="Flow_1jf62ed" sourceRef="PaymentPreparationFailure" targetRef="PaymentPreparationFailed" />
+      <bpmn:boundaryEvent id="PaymentPreparationFailure" attachedToRef="PrepareMeansOfPayment">
         <bpmn:outgoing>Flow_1jf62ed</bpmn:outgoing>
         <bpmn:errorEventDefinition id="ErrorEventDefinition_05waygn" />
       </bpmn:boundaryEvent>
-      <bpmn:endEvent id="Event_0ot31yo" name="Payment preparation failed">
+      <bpmn:endEvent id="PaymentPreparationFailed" name="Payment preparation failed">
         <bpmn:incoming>Flow_1jf62ed</bpmn:incoming>
         <bpmn:errorEventDefinition id="ErrorEventDefinition_1v16516" errorRef="Error_057fmbu" />
       </bpmn:endEvent>
-      <bpmn:boundaryEvent id="Event_1xh01tr" attachedToRef="PrepareShoppingCartDeposit">
+      <bpmn:boundaryEvent id="DepositPreparationFailure" attachedToRef="PrepareShoppingCartDeposit">
         <bpmn:outgoing>Flow_0kbfg1p</bpmn:outgoing>
         <bpmn:errorEventDefinition id="ErrorEventDefinition_0r7efy3" />
       </bpmn:boundaryEvent>
-      <bpmn:sequenceFlow id="Flow_0kbfg1p" sourceRef="Event_1xh01tr" targetRef="DepositPreparationFailed" />
+      <bpmn:sequenceFlow id="Flow_0kbfg1p" sourceRef="DepositPreparationFailure" targetRef="DepositPreparationFailed" />
       <bpmn:endEvent id="DepositPreparationFailed" name="Deposit preparation failed">
         <bpmn:incoming>Flow_0kbfg1p</bpmn:incoming>
         <bpmn:errorEventDefinition id="ErrorEventDefinition_0uyb2jd" errorRef="Error_1ls31lw" />
       </bpmn:endEvent>
+      <bpmn:serviceTask id="CreateShoppingList" name="Create shopping list" camunda:delegateExpression="${createShoppingListTask}">
+        <bpmn:documentation>Creation of a list of goods which are to be bought and decide whether a shopping cart is needed.</bpmn:documentation>
+        <bpmn:incoming>Flow_0v2pxo5</bpmn:incoming>
+        <bpmn:outgoing>Flow_1dvqi2c</bpmn:outgoing>
+        <bpmn:dataOutputAssociation id="DataOutputAssociation_0kd3be9">
+          <bpmn:targetRef>InitialShoppingList</bpmn:targetRef>
+        </bpmn:dataOutputAssociation>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="PrepareMeansOfPayment" name="Prepare means of payment" camunda:delegateExpression="${prepareMeansOfPaymentTask}">
+        <bpmn:documentation>Creates a filled meansOfPayment variable.</bpmn:documentation>
+        <bpmn:incoming>Flow_1bmt1ky</bpmn:incoming>
+        <bpmn:outgoing>Flow_1bes80e</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="PrepareShoppingCartDeposit" name="Prepare shopping cart deposit" camunda:delegateExpression="${prepareShoppingCartDepositTask}">
+        <bpmn:documentation>Creates a filled shoppingCartDeposit variable.</bpmn:documentation>
+        <bpmn:incoming>Flow_0ka5yss</bpmn:incoming>
+        <bpmn:outgoing>Flow_1sxxq2f</bpmn:outgoing>
+      </bpmn:serviceTask>
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_1p3snpq" sourceRef="Activity_0v94o71" targetRef="Activity_1i0sh1x" />
     <bpmn:endEvent id="ShoppingCompleted" name="Shopping completed">
@@ -99,12 +96,12 @@
       <bpmn:incoming>Flow_06xvmjl</bpmn:incoming>
       <bpmn:signalEventDefinition id="SignalEventDefinition_13m4l90" signalRef="Signal_0amtfel" />
     </bpmn:endEvent>
-    <bpmn:boundaryEvent id="Event_1izmka9" attachedToRef="Activity_0v94o71">
+    <bpmn:boundaryEvent id="ShoppingPreparationFailure" attachedToRef="Activity_0v94o71">
       <bpmn:outgoing>Flow_1wf674c</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDefinition_1ph69lc" />
     </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_1wf674c" sourceRef="Event_1izmka9" targetRef="Event_03w7u2y" />
-    <bpmn:endEvent id="Event_03w7u2y" name="Shopping&#10;preparation&#10;failed">
+    <bpmn:sequenceFlow id="Flow_1wf674c" sourceRef="ShoppingPreparationFailure" targetRef="ShoppingPreparationFailed" />
+    <bpmn:endEvent id="ShoppingPreparationFailed" name="Shopping&#10;preparation&#10;failed">
       <bpmn:incoming>Flow_1wf674c</bpmn:incoming>
       <bpmn:errorEventDefinition id="ErrorEventDefinition_0hpvie4" errorRef="Error_0v47w2p" />
     </bpmn:endEvent>
@@ -112,61 +109,42 @@
       <bpmn:incoming>Flow_1p3snpq</bpmn:incoming>
       <bpmn:outgoing>Flow_07vk1pj</bpmn:outgoing>
       <bpmn:sequenceFlow id="Flow_0hgirs7" name="Yes" sourceRef="Gateway_15fx12p" targetRef="TakeShoppingCart">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${shoppingCartRequired}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${shoppingCartNeeded or shoppingCartMandatory}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_0kgoi72" sourceRef="TakeShoppingCart" targetRef="Gateway_1k094sh" />
       <bpmn:sequenceFlow id="Flow_1wvghnc" sourceRef="Gateway_15fx12p" targetRef="Gateway_1k094sh" />
-      <bpmn:sequenceFlow id="Flow_14abt7h" sourceRef="Event_0kzlfky" targetRef="CancelShoppingError" />
+      <bpmn:sequenceFlow id="Flow_14abt7h" sourceRef="TakeCartFailure" targetRef="CancelShoppingError" />
       <bpmn:sequenceFlow id="Flow_0oe9l9h" sourceRef="Gateway_1k094sh" targetRef="ChooseGoods" />
-      <bpmn:sequenceFlow id="Flow_1f2pm1s" sourceRef="Event_11b4zlb" targetRef="Gateway_15fx12p" />
-      <bpmn:sequenceFlow id="Flow_1722ien" sourceRef="Event_08wt8jd" targetRef="CancelShoppingError" />
+      <bpmn:sequenceFlow id="Flow_1f2pm1s" sourceRef="StartEvent_PerformShopping" targetRef="Gateway_15fx12p" />
+      <bpmn:sequenceFlow id="Flow_1722ien" sourceRef="ChooseGoodsFailure" targetRef="CancelShoppingError" />
       <bpmn:sequenceFlow id="Flow_1hk8ids" sourceRef="ChooseGoods" targetRef="PayGoods" />
-      <bpmn:sequenceFlow id="Flow_187rwiy" sourceRef="Event_0173w8a" targetRef="CancelShoppingError" />
+      <bpmn:sequenceFlow id="Flow_187rwiy" sourceRef="PaymentFailure" targetRef="CancelShoppingError" />
       <bpmn:sequenceFlow id="Flow_1ua22at" sourceRef="PayGoods" targetRef="Gateway_0antrqg" />
       <bpmn:sequenceFlow id="Flow_0d4l1zq" name="no" sourceRef="Gateway_0antrqg" targetRef="CreateNewShoppingList">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!allGoodsBought}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_0vs9kjr" sourceRef="Gateway_0antrqg" targetRef="PerformShoppingCompleted" />
-      <bpmn:sequenceFlow id="Flow_1qrivq5" sourceRef="CreateNewShoppingList" targetRef="Escalation_MissingGoods" />
-      <bpmn:boundaryEvent id="Event_0kzlfky" name="No valid cart deposit" attachedToRef="TakeShoppingCart">
+      <bpmn:sequenceFlow id="Flow_1qrivq5" sourceRef="CreateNewShoppingList" targetRef="MissingGoodsEscalated" />
+      <bpmn:boundaryEvent id="TakeCartFailure" name="No valid cart deposit" attachedToRef="TakeShoppingCart">
         <bpmn:outgoing>Flow_14abt7h</bpmn:outgoing>
         <bpmn:errorEventDefinition id="ErrorEventDefinition_13ve0ue" />
       </bpmn:boundaryEvent>
-      <bpmn:boundaryEvent id="Event_0173w8a" name="Payment&#10;failure" attachedToRef="PayGoods">
+      <bpmn:boundaryEvent id="PaymentFailure" name="Payment&#10;failure" attachedToRef="PayGoods">
         <bpmn:outgoing>Flow_187rwiy</bpmn:outgoing>
         <bpmn:errorEventDefinition id="ErrorEventDefinition_1f0yuod" errorRef="Error_1nsgmy4" />
       </bpmn:boundaryEvent>
-      <bpmn:endEvent id="Escalation_MissingGoods" name="Missing goods">
+      <bpmn:endEvent id="MissingGoodsEscalated" name="Missing goods">
         <bpmn:incoming>Flow_1qrivq5</bpmn:incoming>
         <bpmn:escalationEventDefinition id="EscalationEventDefinition_066wh5r" escalationRef="Escalation_1wpcl23" />
       </bpmn:endEvent>
       <bpmn:endEvent id="PerformShoppingCompleted">
         <bpmn:incoming>Flow_0vs9kjr</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:task id="CreateNewShoppingList" name="Create new shopping list">
-        <bpmn:incoming>Flow_0d4l1zq</bpmn:incoming>
-        <bpmn:outgoing>Flow_1qrivq5</bpmn:outgoing>
-        <bpmn:dataOutputAssociation id="DataOutputAssociation_03yfobv">
-          <bpmn:targetRef>ResultingShoppingList</bpmn:targetRef>
-        </bpmn:dataOutputAssociation>
-      </bpmn:task>
       <bpmn:exclusiveGateway id="Gateway_0antrqg" name="All goods&#10;bought?" default="Flow_0vs9kjr">
         <bpmn:incoming>Flow_1ua22at</bpmn:incoming>
         <bpmn:outgoing>Flow_0d4l1zq</bpmn:outgoing>
         <bpmn:outgoing>Flow_0vs9kjr</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:task id="PayGoods" name="Pay goods">
-        <bpmn:incoming>Flow_1hk8ids</bpmn:incoming>
-        <bpmn:outgoing>Flow_1ua22at</bpmn:outgoing>
-      </bpmn:task>
-      <bpmn:task id="ChooseGoods" name="Choose goods">
-        <bpmn:incoming>Flow_0oe9l9h</bpmn:incoming>
-        <bpmn:outgoing>Flow_1hk8ids</bpmn:outgoing>
-        <bpmn:dataOutputAssociation id="DataOutputAssociation_0ad4w3p">
-          <bpmn:targetRef>InitialShoppingList</bpmn:targetRef>
-        </bpmn:dataOutputAssociation>
-        <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="${shoppingList}" />
-      </bpmn:task>
       <bpmn:endEvent id="CancelShoppingError" name="Cancel shopping">
         <bpmn:incoming>Flow_14abt7h</bpmn:incoming>
         <bpmn:incoming>Flow_1722ien</bpmn:incoming>
@@ -178,34 +156,63 @@
         <bpmn:incoming>Flow_1wvghnc</bpmn:incoming>
         <bpmn:outgoing>Flow_0oe9l9h</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:task id="TakeShoppingCart" name="Take shopping cart">
-        <bpmn:incoming>Flow_0hgirs7</bpmn:incoming>
-        <bpmn:outgoing>Flow_0kgoi72</bpmn:outgoing>
-      </bpmn:task>
-      <bpmn:exclusiveGateway id="Gateway_15fx12p" name="Shopping cart required?" default="Flow_1wvghnc">
+      <bpmn:exclusiveGateway id="Gateway_15fx12p" name="Shopping cart needed or mandatory?" default="Flow_1wvghnc">
         <bpmn:incoming>Flow_1f2pm1s</bpmn:incoming>
         <bpmn:outgoing>Flow_0hgirs7</bpmn:outgoing>
         <bpmn:outgoing>Flow_1wvghnc</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:startEvent id="Event_11b4zlb">
+      <bpmn:startEvent id="StartEvent_PerformShopping">
+        <bpmn:extensionElements>
+          <camunda:executionListener delegateExpression="${checkShoppingCartMandatoryTask}" event="start" />
+        </bpmn:extensionElements>
         <bpmn:outgoing>Flow_1f2pm1s</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:boundaryEvent id="Event_08wt8jd" name="Cancel&#10;shopping" attachedToRef="ChooseGoods">
+      <bpmn:boundaryEvent id="ChooseGoodsFailure" attachedToRef="ChooseGoods">
         <bpmn:outgoing>Flow_1722ien</bpmn:outgoing>
         <bpmn:errorEventDefinition id="ErrorEventDefinition_0g5qh5k" />
       </bpmn:boundaryEvent>
+      <bpmn:serviceTask id="TakeShoppingCart" name="Take shopping cart" camunda:delegateExpression="${takeShoppingCartTask}">
+        <bpmn:documentation>Creates a ${shoppingCartTaken} process variable containing a boolean flag.</bpmn:documentation>
+        <bpmn:incoming>Flow_0hgirs7</bpmn:incoming>
+        <bpmn:outgoing>Flow_0kgoi72</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="ChooseGoods" name="Choose goods" camunda:delegateExpression="${chooseGoodsTask}">
+        <bpmn:documentation>Creates variable ${shoppingCartContents} with goods found in ${shoppingList} if present in the market.</bpmn:documentation>
+        <bpmn:incoming>Flow_0oe9l9h</bpmn:incoming>
+        <bpmn:outgoing>Flow_1hk8ids</bpmn:outgoing>
+        <bpmn:dataOutputAssociation id="DataOutputAssociation_0ad4w3p">
+          <bpmn:targetRef>InitialShoppingList</bpmn:targetRef>
+        </bpmn:dataOutputAssociation>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="${shoppingList}" />
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="PayGoods" name="Pay goods" camunda:delegateExpression="${payGoodsTask}">
+        <bpmn:documentation> Pay the goods currently in variable ${shoppingCartContents} and set variable ${allGoodsBought} according to variable ${shoppingList}. </bpmn:documentation>
+        <bpmn:incoming>Flow_1hk8ids</bpmn:incoming>
+        <bpmn:outgoing>Flow_1ua22at</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="CreateNewShoppingList" name="Create new shopping list" camunda:delegateExpression="${createNewShoppingListTask}">
+        <bpmn:documentation>Sets variable ${shoppingList} to a List of goods still not bought after the shopping completed.</bpmn:documentation>
+        <bpmn:incoming>Flow_0d4l1zq</bpmn:incoming>
+        <bpmn:outgoing>Flow_1qrivq5</bpmn:outgoing>
+        <bpmn:dataOutputAssociation id="DataOutputAssociation_03yfobv">
+          <bpmn:targetRef>ResultingShoppingList</bpmn:targetRef>
+        </bpmn:dataOutputAssociation>
+      </bpmn:serviceTask>
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="Flow_07vk1pj" sourceRef="Activity_1i0sh1x" targetRef="ShoppingCompleted" />
-    <bpmn:boundaryEvent id="Event_1dxo7yc" name="Error" attachedToRef="Activity_1i0sh1x">
+    <bpmn:boundaryEvent id="ShoppingFailure" name="Failure" attachedToRef="Activity_1i0sh1x">
       <bpmn:outgoing>Flow_0h5c060</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDefinition_1oifv4y" camunda:errorCodeVariable="ShoppingErrorCode" camunda:errorMessageVariable="ShoppingErrorMsg" />
     </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_0h5c060" sourceRef="Event_1dxo7yc" targetRef="ShoppingFailed" />
-    <bpmn:boundaryEvent id="Event_0yelp3e" name="Missing goods" attachedToRef="Activity_1i0sh1x">
+    <bpmn:sequenceFlow id="Flow_0h5c060" sourceRef="ShoppingFailure" targetRef="ShoppingFailed" />
+    <bpmn:boundaryEvent id="MissingGoodsEscalation" name="Missing goods" attachedToRef="Activity_1i0sh1x">
       <bpmn:outgoing>Flow_06xvmjl</bpmn:outgoing>
       <bpmn:escalationEventDefinition id="EscalationEventDefinition_1v7ksgk" escalationRef="Escalation_1wpcl23" />
     </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_06xvmjl" sourceRef="Event_0yelp3e" targetRef="StillMissingGoods" />
+    <bpmn:sequenceFlow id="Flow_06xvmjl" sourceRef="MissingGoodsEscalation" targetRef="StillMissingGoods" />
+    <bpmn:startEvent id="StartEvent" name="Some goods&#10;needed">
+      <bpmn:outgoing>Flow_01t1t2h</bpmn:outgoing>
+    </bpmn:startEvent>
   </bpmn:process>
   <bpmn:escalation id="Escalation_1wpcl23" name="Missing Goods" escalationCode="MissingGoodsEscalation" />
   <bpmn:signal id="Signal_0amtfel" name="StillMissingGoodsSignal" />
@@ -239,59 +246,53 @@
         <di:waypoint x="1132" y="410" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1p3snpq_di" bpmnElement="Flow_1p3snpq">
-        <di:waypoint x="250" y="600" />
+        <di:waypoint x="250" y="610" />
         <di:waypoint x="250" y="700" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_01t1t2h_di" bpmnElement="Flow_01t1t2h">
         <di:waypoint x="250" y="178" />
         <di:waypoint x="250" y="250" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_10yezv5_di" bpmnElement="StartEvent_1">
-        <dc:Bounds x="232" y="142" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="219" y="105" width="62" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1jx97cl_di" bpmnElement="Activity_0v94o71" isExpanded="true">
-        <dc:Bounds x="160" y="250" width="900" height="350" />
+        <dc:Bounds x="160" y="250" width="900" height="360" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0kbfg1p_di" bpmnElement="Flow_0kbfg1p">
-        <di:waypoint x="718" y="430" />
+        <di:waypoint x="738" y="430" />
         <di:waypoint x="802" y="430" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1jf62ed_di" bpmnElement="Flow_1jf62ed">
-        <di:waypoint x="718" y="290" />
+        <di:waypoint x="738" y="290" />
         <di:waypoint x="982" y="290" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1lsm3xs_di" bpmnElement="Flow_1lsm3xs">
         <di:waypoint x="540" y="495" />
-        <di:waypoint x="540" y="560" />
-        <di:waypoint x="725" y="560" />
+        <di:waypoint x="540" y="550" />
+        <di:waypoint x="725" y="550" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="639" y="542" width="13" height="14" />
+          <dc:Bounds x="639" y="532" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_033uvg8_di" bpmnElement="Flow_033uvg8">
-        <di:waypoint x="775" y="560" />
-        <di:waypoint x="885" y="560" />
+        <di:waypoint x="775" y="550" />
+        <di:waypoint x="885" y="550" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ka5yss_di" bpmnElement="Flow_0ka5yss">
         <di:waypoint x="565" y="470" />
-        <di:waypoint x="600" y="470" />
+        <di:waypoint x="620" y="470" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1hzwys0_di" bpmnElement="Flow_1hzwys0">
-        <di:waypoint x="935" y="560" />
-        <di:waypoint x="982" y="560" />
+        <di:waypoint x="935" y="550" />
+        <di:waypoint x="982" y="550" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1bes80e_di" bpmnElement="Flow_1bes80e">
-        <di:waypoint x="700" y="330" />
+        <di:waypoint x="720" y="330" />
         <di:waypoint x="910" y="330" />
-        <di:waypoint x="910" y="535" />
+        <di:waypoint x="910" y="525" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1sxxq2f_di" bpmnElement="Flow_1sxxq2f">
-        <di:waypoint x="700" y="470" />
+        <di:waypoint x="720" y="470" />
         <di:waypoint x="750" y="470" />
-        <di:waypoint x="750" y="535" />
+        <di:waypoint x="750" y="525" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_03a826d_di" bpmnElement="Flow_03a826d">
         <di:waypoint x="490" y="355" />
@@ -300,7 +301,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1bmt1ky_di" bpmnElement="Flow_1bmt1ky">
         <di:waypoint x="515" y="330" />
-        <di:waypoint x="600" y="330" />
+        <di:waypoint x="620" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1dvqi2c_di" bpmnElement="Flow_1dvqi2c">
         <di:waypoint x="410" y="330" />
@@ -310,26 +311,20 @@
         <di:waypoint x="258" y="330" />
         <di:waypoint x="310" y="330" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_14ojxk9_di" bpmnElement="Event_14ojxk9">
+      <bpmndi:BPMNShape id="Event_14ojxk9_di" bpmnElement="StartEvent_PrepareShopping">
         <dc:Bounds x="222" y="312" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_13rqf6g_di" bpmnElement="CreateShoppingList">
-        <dc:Bounds x="310" y="290" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_08h8kt9_di" bpmnElement="Gateway_0brnvv1">
         <dc:Bounds x="465" y="305" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1a66ds0_di" bpmnElement="PrepareMeansOfPayment">
-        <dc:Bounds x="600" y="290" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0vyngt3_di" bpmnElement="PrepareShoppingCartDeposit">
-        <dc:Bounds x="600" y="430" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_11j2n6o_di" bpmnElement="Gateway_1j7nky6">
-        <dc:Bounds x="885" y="535" width="50" height="50" />
+        <dc:Bounds x="885" y="525" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0wugkez_di" bpmnElement="PrepareShoppingCompleted">
-        <dc:Bounds x="982" y="542" width="36" height="36" />
+        <dc:Bounds x="982" y="532" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="976" y="575" width="51" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_08t1zv7_di" bpmnElement="Gateway_08t1zv7" isMarkerVisible="true">
         <dc:Bounds x="515" y="445" width="50" height="50" />
@@ -338,9 +333,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1uyshig_di" bpmnElement="Gateway_1uyshig" isMarkerVisible="true">
-        <dc:Bounds x="725" y="535" width="50" height="50" />
+        <dc:Bounds x="725" y="525" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_07dcj66_di" bpmnElement="Event_0ot31yo">
+      <bpmndi:BPMNShape id="Event_07dcj66_di" bpmnElement="PaymentPreparationFailed">
         <dc:Bounds x="982" y="272" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="959" y="315" width="86" height="27" />
@@ -352,11 +347,23 @@
           <dc:Bounds x="777" y="455" width="86" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1rgx08v_di" bpmnElement="Event_1xh01tr">
-        <dc:Bounds x="682" y="412" width="36" height="36" />
+      <bpmndi:BPMNShape id="Activity_15fpv27_di" bpmnElement="CreateShoppingList">
+        <dc:Bounds x="310" y="290" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_18v1zm4_di" bpmnElement="Event_1d8ucpr">
-        <dc:Bounds x="682" y="272" width="36" height="36" />
+      <bpmndi:BPMNShape id="Activity_1rsdnzt_di" bpmnElement="PrepareMeansOfPayment">
+        <dc:Bounds x="620" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0dj1ytx_di" bpmnElement="PrepareShoppingCartDeposit">
+        <dc:Bounds x="620" y="430" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1rgx08v_di" bpmnElement="DepositPreparationFailure">
+        <dc:Bounds x="702" y="412" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_18v1zm4_di" bpmnElement="PaymentPreparationFailure">
+        <dc:Bounds x="702" y="272" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="733" y="263" width="34" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1p15nz5_di" bpmnElement="ShoppingCompleted">
         <dc:Bounds x="232" y="1082" width="36" height="36" />
@@ -365,15 +372,15 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DataObjectReference_06d8bb2_di" bpmnElement="InitialShoppingList">
-        <dc:Bounds x="482" y="615" width="36" height="50" />
+        <dc:Bounds x="482" y="625" width="36" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="469" y="672" width="63" height="14" />
+          <dc:Bounds x="469" y="682" width="63" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DataObjectReference_1ki1bvk_di" bpmnElement="ResultingShoppingList">
-        <dc:Bounds x="1102" y="615" width="36" height="50" />
+        <dc:Bounds x="1102" y="625" width="36" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1088" y="591" width="63" height="14" />
+          <dc:Bounds x="1088" y="601" width="63" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1bqg6p8_di" bpmnElement="ShoppingFailed">
@@ -388,7 +395,7 @@
           <dc:Bounds x="1091" y="1125" width="59" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0moezzx_di" bpmnElement="Event_03w7u2y">
+      <bpmndi:BPMNShape id="Event_0moezzx_di" bpmnElement="ShoppingPreparationFailed">
         <dc:Bounds x="1132" y="392" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1122" y="435" width="56" height="40" />
@@ -420,7 +427,7 @@
       <bpmndi:BPMNEdge id="Flow_187rwiy_di" bpmnElement="Flow_187rwiy">
         <di:waypoint x="880" y="848" />
         <di:waypoint x="880" y="950" />
-        <di:waypoint x="538" y="950" />
+        <di:waypoint x="738" y="950" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1hk8ids_di" bpmnElement="Flow_1hk8ids">
         <di:waypoint x="740" y="790" />
@@ -428,9 +435,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1722ien_di" bpmnElement="Flow_1722ien">
         <di:waypoint x="720" y="848" />
-        <di:waypoint x="720" y="900" />
-        <di:waypoint x="520" y="900" />
-        <di:waypoint x="520" y="932" />
+        <di:waypoint x="720" y="932" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1f2pm1s_di" bpmnElement="Flow_1f2pm1s">
         <di:waypoint x="238" y="790" />
@@ -443,7 +448,7 @@
       <bpmndi:BPMNEdge id="Flow_14abt7h_di" bpmnElement="Flow_14abt7h">
         <di:waypoint x="460" y="918" />
         <di:waypoint x="460" y="950" />
-        <di:waypoint x="502" y="950" />
+        <di:waypoint x="702" y="950" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1wvghnc_di" bpmnElement="Flow_1wvghnc">
         <di:waypoint x="345" y="790" />
@@ -462,7 +467,7 @@
           <dc:Bounds x="326" y="834" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_1tzbgcg_di" bpmnElement="Escalation_MissingGoods">
+      <bpmndi:BPMNShape id="Event_1tzbgcg_di" bpmnElement="MissingGoodsEscalated">
         <dc:Bounds x="1242" y="772" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1225" y="815" width="71" height="14" />
@@ -474,88 +479,94 @@
           <dc:Bounds x="1234" y="925" width="51" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1iokv3s_di" bpmnElement="CreateNewShoppingList">
-        <dc:Bounds x="1070" y="750" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0antrqg_di" bpmnElement="Gateway_0antrqg" isMarkerVisible="true">
         <dc:Bounds x="955" y="765" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="957" y="728" width="46" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0ho5isu_di" bpmnElement="PayGoods">
-        <dc:Bounds x="810" y="750" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_154zm4n_di" bpmnElement="ChooseGoods">
-        <dc:Bounds x="640" y="750" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0br8cvh_di" bpmnElement="CancelShoppingError">
-        <dc:Bounds x="502" y="932" width="36" height="36" />
+        <dc:Bounds x="702" y="932" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="479" y="978" width="82" height="14" />
+          <dc:Bounds x="679" y="978" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1k094sh_di" bpmnElement="Gateway_1k094sh" isMarkerVisible="true">
         <dc:Bounds x="525" y="765" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1oor175_di" bpmnElement="TakeShoppingCart">
-        <dc:Bounds x="390" y="820" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_15fx12p_di" bpmnElement="Gateway_15fx12p" isMarkerVisible="true">
         <dc:Bounds x="295" y="765" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="286" y="728" width="68" height="27" />
+          <dc:Bounds x="286" y="728" width="68" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_11b4zlb_di" bpmnElement="Event_11b4zlb">
+      <bpmndi:BPMNShape id="Event_11b4zlb_di" bpmnElement="StartEvent_PerformShopping">
         <dc:Bounds x="202" y="772" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1quh7li_di" bpmnElement="Event_08wt8jd">
+      <bpmndi:BPMNShape id="Activity_118wlr1_di" bpmnElement="TakeShoppingCart">
+        <dc:Bounds x="390" y="820" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1mmyui8_di" bpmnElement="ChooseGoods">
+        <dc:Bounds x="640" y="750" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1g3bqzt_di" bpmnElement="PayGoods">
+        <dc:Bounds x="810" y="750" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0v42bbe_di" bpmnElement="CreateNewShoppingList">
+        <dc:Bounds x="1070" y="750" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1quh7li_di" bpmnElement="ChooseGoodsFailure">
         <dc:Bounds x="702" y="812" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="667" y="846" width="45" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0a2vr1j_di" bpmnElement="Event_0173w8a">
+      <bpmndi:BPMNShape id="Event_0a2vr1j_di" bpmnElement="PaymentFailure">
         <dc:Bounds x="862" y="812" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="828" y="846" width="44" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0xjydzm_di" bpmnElement="Event_0kzlfky">
+      <bpmndi:BPMNShape id="Event_0xjydzm_di" bpmnElement="TakeCartFailure">
         <dc:Bounds x="442" y="882" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="389" y="925" width="62" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0vv5g7g_di" bpmnElement="Event_0yelp3e">
+      <bpmndi:BPMNShape id="Event_1sigdr7_di" bpmnElement="StartEvent">
+        <dc:Bounds x="232" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="219" y="105" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0vv5g7g_di" bpmnElement="MissingGoodsEscalation">
         <dc:Bounds x="1012" y="1002" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="995" y="1045" width="71" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0ucatec_di" bpmnElement="Event_1dxo7yc">
+      <bpmndi:BPMNShape id="Event_0ucatec_di" bpmnElement="ShoppingFailure">
         <dc:Bounds x="762" y="1002" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="737" y="1045" width="25" height="14" />
+          <dc:Bounds x="733" y="1045" width="34" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0c2cgiv_di" bpmnElement="Event_1izmka9">
+      <bpmndi:BPMNShape id="Event_0c2cgiv_di" bpmnElement="ShoppingPreparationFailure">
         <dc:Bounds x="1042" y="392" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DataOutputAssociation_0kd3be9_di" bpmnElement="DataOutputAssociation_0kd3be9">
         <di:waypoint x="360" y="370" />
-        <di:waypoint x="360" y="640" />
-        <di:waypoint x="482" y="640" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DataOutputAssociation_03yfobv_di" bpmnElement="DataOutputAssociation_03yfobv">
-        <di:waypoint x="1121" y="750" />
-        <di:waypoint x="1122" y="665" />
+        <di:waypoint x="360" y="650" />
+        <di:waypoint x="482" y="650" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DataOutputAssociation_0ad4w3p_di" bpmnElement="DataOutputAssociation_0ad4w3p">
         <di:waypoint x="660" y="750" />
-        <di:waypoint x="660" y="640" />
-        <di:waypoint x="518" y="640" />
+        <di:waypoint x="660" y="650" />
+        <di:waypoint x="518" y="650" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_03yfobv_di" bpmnElement="DataOutputAssociation_03yfobv">
+        <di:waypoint x="1121" y="750" />
+        <di:waypoint x="1122" y="675" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

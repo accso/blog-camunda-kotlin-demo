@@ -14,7 +14,6 @@
         <appender-ref ref="CONSOLE"/>
     </root>
 
-    <logger name="org.camunda.bpm.scenario" level="info"/> <!-- or info -->
-    <logger name="de.accso" level="debug"/>
+    <logger name="de.accso" level="info"/>
 
 </configuration>

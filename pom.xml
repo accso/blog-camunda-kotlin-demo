@@ -29,6 +29,9 @@
         <junit-jupiter.version>5.7.2</junit-jupiter.version>
         <camunda-bpm-assert.version>10.0.0</camunda-bpm-assert.version>
         <camunda-bpm-assert-scenario.version>1.1.1</camunda-bpm-assert-scenario.version>
+        <spring-boot-test.version>2.5.0</spring-boot-test.version>
+        <spring-test.version>5.3.7</spring-test.version>
+        <jaxb-runtime.version>2.3.1</jaxb-runtime.version>
     </properties>
 
 
@@ -94,6 +97,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>${jaxb-runtime.version}</version>
+            <scope>runtime</scope>
+        </dependency>
 
 
         <!--   JUnit test cases     -->
@@ -135,6 +144,18 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>3.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test</artifactId>
+            <version>${spring-boot-test.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring-test.version}</version>
             <scope>test</scope>
         </dependency>
 

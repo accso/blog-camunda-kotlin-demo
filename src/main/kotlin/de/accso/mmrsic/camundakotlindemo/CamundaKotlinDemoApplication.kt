@@ -18,10 +18,10 @@ open class CamundaKotlinDemoApplication(private val repositoryService: Repositor
 
     @EventListener
     fun processPostDeploy(evt: PostDeployEvent) {
-        LOG.debug("Post deploy event caught: $evt")
+        logger.debug("Post deploy event caught: $evt")
         val numProcessDefs = repositoryService.createProcessDefinitionQuery().list().size
-        LOG.info("Number of deployed process definitions: $numProcessDefs")
-        LOG.trace("The event knows about the repository too: ${evt.processEngine.repositoryService}")
+        logger.info("Number of deployed process definitions: $numProcessDefs")
+        logger.trace("The event knows about the repository too: ${evt.processEngine.repositoryService}")
     }
 }
 
@@ -30,5 +30,6 @@ fun main(args: Array<String>) {
     runApplication<CamundaKotlinDemoApplication>(*args)
 }
 
-/** Logger for this file. */
-private val LOG: Logger = LoggerFactory.getLogger(CamundaKotlinDemoApplication::class.java.name)
+/** The SLF4J logger of this instance. */
+internal val Any.logger: Logger
+    get() = LoggerFactory.getLogger(javaClass)
