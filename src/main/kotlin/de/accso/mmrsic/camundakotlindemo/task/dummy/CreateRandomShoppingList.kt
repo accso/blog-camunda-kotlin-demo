@@ -36,7 +36,7 @@ class CreateRandomShoppingList : CreateShoppingListTask {
             AllGoods.randomNames(shoppingListSize).also { logger.info("Created shopping list: $it") }
         }
         execution.setVariableIfMissing(Process.Variables.CART_NEEDED) {
-            val cartNeeded = Random.nextBoolean(shoppingListSize - 2.0 / (shoppingListSize))
+            val cartNeeded = Random.nextBoolean((shoppingListSize - 2.0) / shoppingListSize)
             cartNeeded.also { logger.info("Shopping cart needed: $it") }
         }
     }
