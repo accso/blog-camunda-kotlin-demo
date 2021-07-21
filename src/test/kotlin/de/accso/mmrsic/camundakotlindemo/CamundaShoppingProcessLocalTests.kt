@@ -63,6 +63,7 @@ internal class CamundaShoppingProcessMockTests {
     /** Reset all [Mock]s of this JUnit class. */
     @AfterEach
     fun resetMocks() {
+        Mocks.reset()
         reset(shoppingProcess)
         reset(createShoppingListTask)
         reset(prepareMeansOfPaymentTask)
