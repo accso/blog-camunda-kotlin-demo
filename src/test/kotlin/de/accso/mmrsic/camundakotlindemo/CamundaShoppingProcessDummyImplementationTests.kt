@@ -1,5 +1,3 @@
-@file:Suppress("UnusedEquals")
-
 package de.accso.mmrsic.camundakotlindemo
 
 import de.accso.mmrsic.camundakotlindemo.Process.ActivityIds
@@ -9,6 +7,7 @@ import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.camunda.bpm.engine.test.assertions.ProcessEngineTests
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -59,7 +58,7 @@ internal class CamundaShoppingProcessDummyImplementationTests {
             .hasNotPassed(ActivityIds.COMPLETED)
             .hasPassed(ActivityIds.SHOPPING_FAILED)
         assertThat(processInstance).variables()
-            .hasEntrySatisfying("ShoppingErrorCode") { it == "CancelShoppingErrorCode" }
-            .hasEntrySatisfying("ShoppingErrorMsg") { it == "CancelShoppingErrorMsg" }
+            .hasEntrySatisfying("ShoppingErrorCode") { assertEquals("CancelShoppingErrorCode", it) }
+            .hasEntrySatisfying("ShoppingErrorMsg") { assertEquals("CancelShoppingErrorMsg", it) }
     }
 }
