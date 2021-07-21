@@ -3,7 +3,6 @@ package de.accso.mmrsic.camundakotlindemo.task.dummy
 import de.accso.mmrsic.camundakotlindemo.Process
 import de.accso.mmrsic.camundakotlindemo.logger
 import de.accso.mmrsic.camundakotlindemo.task.CreateShoppingListTask
-import de.accso.mmrsic.camundakotlindemo.task.getMandatoryList
 import de.accso.mmrsic.camundakotlindemo.task.setVariableIfMissing
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.lang.Integer.min
@@ -37,7 +36,6 @@ class CreateRandomShoppingList : CreateShoppingListTask {
             AllGoods.randomNames(shoppingListSize).also { logger.info("Created shopping list: $it") }
         }
         execution.setVariableIfMissing(Process.Variables.CART_NEEDED) {
-            val shoppingList = execution.getMandatoryList<String>(Process.Variables.SHOPPING_LIST)
             val cartNeeded = Random.nextBoolean(shoppingListSize - 2.0 / (shoppingListSize))
             cartNeeded.also { logger.info("Shopping cart needed: $it") }
         }

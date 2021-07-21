@@ -10,7 +10,7 @@ import kotlin.random.Random
 
 /** A dummy [CheckShoppingCartMandatoryTask] randomly choosing a value for [Process.Variables.CART_MANDATORY]. */
 @Named("checkShoppingCartMandatoryTask")
-class CheckShoppingCartRandomlyMandatory : CheckShoppingCartMandatoryTask {
+class SetShoppingCartRandomlyMandatory : CheckShoppingCartMandatoryTask {
 
     override fun execute(execution: DelegateExecution) {
         execution.setVariableIfMissing(Process.Variables.CART_MANDATORY) {
