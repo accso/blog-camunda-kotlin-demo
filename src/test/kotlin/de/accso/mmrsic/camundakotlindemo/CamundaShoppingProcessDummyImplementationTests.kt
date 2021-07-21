@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest
 internal class CamundaShoppingProcessDummyImplementationTests {
 
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     lateinit var processEngine: ProcessEngine
 

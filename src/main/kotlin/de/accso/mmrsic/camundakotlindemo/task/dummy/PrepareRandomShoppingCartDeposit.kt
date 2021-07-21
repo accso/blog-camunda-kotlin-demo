@@ -11,8 +11,9 @@ import java.awt.Color
 import javax.inject.Named
 
 /** All supported shopping cart deposit options. */
-val depositOptions = listOf(
-    ShoppingCartChip(diameter = 23.25, Color.YELLOW, thickness = 2.0),
+val cartDepositOptions = listOf(
+    ShoppingCartChip(Color.YELLOW, diameter = 23.25, thickness = 2.0),
+    ShoppingCartChip(Color.RED, diameter = 24.0, thickness = 2.21),
     Coin(1, "Euro", diameter = 23.25, thickness = 2.33),
     Coin(50, "Eurocent", diameter = 24.25, thickness = 2.38)
 )
@@ -23,7 +24,7 @@ class PrepareRandomShoppingCartDeposit : PrepareShoppingCartDepositTask {
 
     override fun execute(execution: DelegateExecution) {
         execution.setVariableIfMissing(Process.Variables.CART_DEPOSIT) {
-            depositOptions.random().also { logger.info("Prepared shopping cart deposit: $it") }
+            cartDepositOptions.random().also { deposit -> logger.info("Prepared shopping cart deposit: $deposit") }
         }
     }
 }

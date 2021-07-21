@@ -27,7 +27,7 @@ interface CreateNewShoppingListTask : JavaDelegate
 sealed class ShoppingCartDeposit(open val diameter: Double, open val thickness: Double) : Serializable
 
 /** A chip representing a [ShoppingCartDeposit]. */
-data class ShoppingCartChip(override val diameter: Double, val color: Color, override val thickness: Double) :
+data class ShoppingCartChip(val color: Color, override val diameter: Double, override val thickness: Double) :
     ShoppingCartDeposit(diameter, thickness)
 
 /** A coin which may be used as [ShoppingCartDeposit]. */
