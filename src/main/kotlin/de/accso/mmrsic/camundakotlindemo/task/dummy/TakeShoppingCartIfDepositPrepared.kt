@@ -14,7 +14,10 @@ class TakeShoppingCartIfDepositPrepared : TakeShoppingCartTask {
 
     override fun execute(execution: DelegateExecution) {
         with(Process.Variables) {
-            if (!execution.hasVariable(CART_DEPOSIT)) throw BpmnError("Missing deposit for shopping cart")
+            if (!execution.hasVariable(CART_DEPOSIT)) {
+                logger.error("Cancel shopping because of missing deposit for shopping cart")
+                throw BpmnError("Missing deposit for shopping cart")
+            }
             execution.setVariable(CART_TAKEN, true)
             logger.info("Shopping cart taken")
         }

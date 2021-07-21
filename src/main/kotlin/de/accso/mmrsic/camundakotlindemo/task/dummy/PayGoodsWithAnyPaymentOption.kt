@@ -20,8 +20,12 @@ class PayGoodsWithAnyPaymentOption : PayGoodsTask {
     override fun execute(execution: DelegateExecution) {
         val paymentOptions = execution.getMandatoryList<MeansOfPayment>(Process.Variables.PAYMENT_OPTIONS)
         logger.debug("Payment options: $paymentOptions")
-        val meansOfPayment =
-            if (paymentOptions.isNotEmpty()) paymentOptions.random() else throw BpmnError("No payment options available")
+        if (paymentOptions.isEmpty()) {
+            logger.error("Canceling payment because no payment option is available")
+            throw BpmnError("No payment options available")
+        }
+
+        val meansOfPayment = paymentOptions.random()
         execution.setVariable(Process.Variables.MEANS_OF_PAYMENT, meansOfPayment)
         val goodsToPay = execution.getMandatoryList<String>(Process.Variables.GOODS)
         logger.info("Paying goods $goodsToPay with $meansOfPayment")

@@ -37,6 +37,6 @@ class ChooseGoodsRandomly : ChooseGoodsTask {
         val previouslyChosenGoods = execution.getMandatoryList<String>(Process.Variables.GOODS)
         val chosenGoods = previouslyChosenGoods.toMutableList().apply { add(newElement) }
         execution.setVariable(Process.Variables.GOODS, chosenGoods)
-        logger.info("Added '$newElement' to chosen goods: $chosenGoods")
+        logger.info("Found item '$newElement' in store, carrying: $chosenGoods")
     }
 }
