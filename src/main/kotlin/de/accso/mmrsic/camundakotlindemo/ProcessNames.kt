@@ -1,5 +1,8 @@
 package de.accso.mmrsic.camundakotlindemo
 
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
+
 /** Process constants. */
 object Process {
     const val NAME = "Shopping"
@@ -19,19 +22,6 @@ object Process {
         const val COMPLETED = "ShoppingCompleted"
         const val PREPARATION_FAILED = "ShoppingPreparationFailure"
         const val SHOPPING_FAILED = "ShoppingFailed"
-    }
-
-    enum class Variable(val camundaName: String) {
-        SHOPPING_LIST("shoppingList"),
-        CART_NEEDED("shoppingCartNeeded"),
-        PAYMENT_OPTIONS("meansOfPaymentOptions"),
-        CART_DEPOSIT("shoppingCartDeposit"),
-        CART_MANDATORY("shoppingCartMandatory"),
-        CART_TAKEN("shoppingCartTaken"),
-        GOODS("goods"),
-        MEANS_OF_PAYMENT("meansOfPayment"),
-        BILL("bill"),
-        ALL_GOODS_BOUGHT("allGoodsBought")
     }
 
     /** Variable names of the [Process]. */
@@ -57,6 +47,9 @@ object Process {
         const val BILL = "bill"
         /** Whether all goods on the shopping list were bought after the store was left. */
         const val ALL_GOODS_BOUGHT = "allGoodsBought"
+
+        /** All [Variables]. */
+        val ALL: List<String> = Variables::class.memberProperties.filter { it.isAccessible }.map { it.name }
     }
 }
 

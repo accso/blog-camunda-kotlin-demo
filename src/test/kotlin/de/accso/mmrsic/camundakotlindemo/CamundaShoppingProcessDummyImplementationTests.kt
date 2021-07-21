@@ -44,7 +44,7 @@ internal class CamundaShoppingProcessDummyImplementationTests {
         )
         assertThat(processInstance).isEnded
         assertThat(processInstance).hasNotPassed(ActivityIds.SHOPPING_FAILED)
-        assertThat(processInstance).hasVariables(*Process.Variable.values().map { it.camundaName }.toTypedArray())
+        assertThat(processInstance).hasVariables(*Variables.ALL.toTypedArray())
     }
 
     @Test
