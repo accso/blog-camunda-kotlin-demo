@@ -188,6 +188,8 @@ internal class CamundaShoppingProcessMockTests {
         }.apply { assertEquals("IntentionalTestException", message) { "Runtime exception message" } }
     }
 
+    /** Test whether starting the shopping process with an empty shopping list results in a final BPMN state
+     * representing a success if no exception is thrown by any of the service task implementations. */
     @Test
     fun testScenarioShoppingListEmpty() {
         Scenario.run(shoppingProcess).startByKey(
